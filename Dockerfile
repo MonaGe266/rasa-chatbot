@@ -8,6 +8,7 @@ ENV RASA_WORKERS=1
 ENV RASA_MAX_TRAINING_PROCESSES=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
+ENV SQLALCHEMY_SILENCE_UBER_WARNING=1
 
 # 安装系统依赖
 RUN apt-get update && \
@@ -31,6 +32,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir transformers==4.28.1 && \
     pip install --no-cache-dir jieba==0.42.1 && \
+    pip install --no-cache-dir "sqlalchemy<2.0" && \
     pip install --no-cache-dir rasa==3.6.2 rasa-sdk==3.6.1 && \
     rm -rf /root/.cache/pip
 
@@ -47,4 +49,5 @@ RUN mkdir -p models && \
 EXPOSE ${PORT}
 
 # 启动命令
-CMD ["rasa", "run", "--enable-api", "--cors", "*", "--port", "5005", "--host", "0.0.0.0", "--num-threads", "1", "--debug"] 
+ENTRYPOINT ["rasa"]
+CMD ["run", "--enable-api", "--cors", "*", "--port", "$PORT", "--host", "0.0.0.0"] 
