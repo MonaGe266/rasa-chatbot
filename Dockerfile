@@ -37,8 +37,7 @@ RUN pip install --upgrade pip && \
     rm -rf /root/.cache/pip
 
 # 复制项目文件
-COPY config.yml domain.yml credentials.yml endpoints.yml ./
-COPY data/ data/
+COPY . .
 
 # 创建模型目录并训练
 RUN mkdir -p models && \
@@ -46,12 +45,7 @@ RUN mkdir -p models && \
     rm -rf /tmp/* /var/tmp/*
 
 # 暴露端口
-EXPOSE ${PORT}
-
-# 创建启动脚本
-RUN echo '#!/bin/bash\n\
-rasa run --enable-api --cors "*" --port $PORT --host 0.0.0.0' > /app/start.sh && \
-    chmod +x /app/start.sh
+EXPOSE 5005
 
 # 启动命令
-CMD ["/app/start.sh"] 
+CMD rasa run --enable-api --cors "*" --port 5005 --host 0.0.0.0 
