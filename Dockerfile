@@ -21,10 +21,17 @@ RUN apt-get update && \
 # 设置工作目录
 WORKDIR /app
 
-# 复制依赖文件并安装
+# 分步安装依赖
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir numpy==1.23.5 && \
+    pip install --no-cache-dir scikit-learn==1.0.2 && \
+    pip install --no-cache-dir protobuf==3.20.3 && \
+    pip install --no-cache-dir tensorflow-cpu==2.11.0 && \
+    pip install --no-cache-dir torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir transformers==4.28.1 && \
+    pip install --no-cache-dir jieba==0.42.1 && \
+    pip install --no-cache-dir rasa==3.6.2 rasa-sdk==3.6.1 && \
     rm -rf /root/.cache/pip
 
 # 复制项目文件
