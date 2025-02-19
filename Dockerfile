@@ -21,28 +21,23 @@ RUN apt-get update && \
 # 设置工作目录
 WORKDIR /app
 
-# 复制依赖文件
+# 复制依赖文件并安装
 COPY requirements.txt requirements.txt
-
-# 安装依赖
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    rm -rf /root/.cache/pip
 
 # 复制项目文件
-COPY config.yml config.yml
-COPY domain.yml domain.yml
-COPY credentials.yml credentials.yml
-COPY endpoints.yml endpoints.yml
+COPY config.yml domain.yml credentials.yml endpoints.yml ./
 COPY data/ data/
 
-# 创建必要的目录
-RUN mkdir -p models
-
-# 训练模型（使用最小资源）
-RUN rasa train --num-threads 1 --debug
+# 创建模型目录并训练
+RUN mkdir -p models && \
+    rasa train --num-threads 1 --debug && \
+    rm -rf /tmp/* /var/tmp/*
 
 # 暴露端口
 EXPOSE ${PORT}
 
-# 启动命令（使用最小资源）
+# 启动命令
 CMD ["rasa", "run", "--enable-api", "--cors", "*", "--port", "5005", "--host", "0.0.0.0", "--num-threads", "1", "--debug"] 
