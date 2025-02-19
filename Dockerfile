@@ -48,6 +48,10 @@ RUN mkdir -p models && \
 # 暴露端口
 EXPOSE ${PORT}
 
+# 创建启动脚本
+RUN echo '#!/bin/bash\n\
+rasa run --enable-api --cors "*" --port $PORT --host 0.0.0.0' > /app/start.sh && \
+    chmod +x /app/start.sh
+
 # 启动命令
-ENTRYPOINT ["rasa"]
-CMD ["run", "--enable-api", "--cors", "*", "--port", "$PORT", "--host", "0.0.0.0"] 
+CMD ["/app/start.sh"] 
