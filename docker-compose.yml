@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  rasa:
+    build: .
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    environment:
+      - RASA_TELEMETRY_ENABLED=false
+    restart: always
+    command: run --enable-api --cors "*" --port 5005 --host 0.0.0.0
+    networks:
+      - rasa-network
+
+networks:
+  rasa-network:
+    driver: bridge 

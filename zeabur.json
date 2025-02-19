@@ -1,0 +1,12 @@
+{
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "deploy": {
+    "startCommand": "rasa run --enable-api --cors \"*\" --port $PORT --host 0.0.0.0 --num-threads 1",
+    "healthCheck": {
+      "path": "/status",
+      "port": 5005
+    }
+  }
+} 

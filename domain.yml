@@ -1,0 +1,65 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+
+responses:
+  utter_greet:
+  - text: "你好！很高兴见到你。"
+  - text: "嗨！有什么我可以帮你的吗？"
+  - text: "您好！请问需要什么帮助？"
+  - text: "你好啊！今天过得怎么样？"
+  - text: "很高兴见到你！有什么我能帮忙的吗？"
+
+  utter_cheer_up:
+  - text: "别难过，事情总会变好的。"
+  - text: "生活中总会有起起落落，保持希望很重要。"
+  - text: "我理解你的心情，让我们一起想想开心的事情吧。"
+  - text: "每个人都会有不开心的时候，愿你很快就能振作起来。"
+  - text: "要记住，阴霾过后总会见到阳光。"
+
+  utter_did_that_help:
+  - text: "这样说有帮助吗？"
+  - text: "你感觉好些了吗？"
+  - text: "我的话对你有帮助吗？"
+  - text: "这样说你能理解吗？"
+
+  utter_happy:
+  - text: "太好了！"
+  - text: "很高兴听到这个消息！"
+  - text: "祝您心情愉快！"
+  - text: "真为你感到高兴！"
+  - text: "希望你一直保持这样的好心情！"
+  - text: "太棒了，继续保持！"
+
+  utter_goodbye:
+  - text: "再见！"
+  - text: "下次见！"
+  - text: "期待再次与您交谈！"
+  - text: "祝您有愉快的一天！"
+  - text: "随时都可以来找我聊天！"
+  - text: "再见，保重！"
+
+  utter_iamabot:
+  - text: "我是一个AI助手，由Rasa驱动。"
+  - text: "我是一个聊天机器人，很高兴为您服务。"
+  - text: "没错，我是一个AI助手，我的目标是帮助你。"
+  - text: "我是一个人工智能助手，虽然不是真人，但我会尽力帮助你。"
+  - text: "我是一个AI聊天助手，我可以理解和回应你的问题。"
+
+  utter_default:
+  - text: "抱歉，我没有理解您的意思。"
+  - text: "能请您换个方式说明吗？"
+  - text: "不好意思，我还在学习中。"
+  - text: "对不起，我可能需要更多信息才能理解你的意思。"
+  - text: "抱歉我现在可能无法准确理解，你能说得更具体一些吗？"
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
