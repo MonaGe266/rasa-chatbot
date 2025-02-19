@@ -1,14 +1,14 @@
 FROM python:3.9-slim
 
 # 设置环境变量
-ENV PORT=5005
-ENV RASA_TELEMETRY_ENABLED=false
-ENV RASA_MEMORY_LIMIT=512m
-ENV RASA_WORKERS=1
-ENV RASA_MAX_TRAINING_PROCESSES=1
-ENV PYTHONUNBUFFERED=1
-ENV PIP_NO_CACHE_DIR=1
-ENV SQLALCHEMY_SILENCE_UBER_WARNING=1
+ENV PORT=5005 \
+    RASA_TELEMETRY_ENABLED=false \
+    RASA_MEMORY_LIMIT=512m \
+    RASA_WORKERS=1 \
+    RASA_MAX_TRAINING_PROCESSES=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    SQLALCHEMY_SILENCE_UBER_WARNING=1
 
 # 安装系统依赖
 RUN apt-get update && \
@@ -22,30 +22,23 @@ RUN apt-get update && \
 # 设置工作目录
 WORKDIR /app
 
-# 分步安装依赖
-COPY requirements.txt requirements.txt
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir numpy==1.23.5 && \
-    pip install --no-cache-dir scikit-learn==1.0.2 && \
-    pip install --no-cache-dir protobuf==3.20.3 && \
-    pip install --no-cache-dir tensorflow-cpu==2.11.0 && \
-    pip install --no-cache-dir torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir transformers==4.28.1 && \
-    pip install --no-cache-dir jieba==0.42.1 && \
-    pip install --no-cache-dir "sqlalchemy<2.0" && \
-    pip install --no-cache-dir rasa==3.6.2 rasa-sdk==3.6.1 && \
-    rm -rf /root/.cache/pip
+# 只复制必要的文件
+COPY requirements.txt .
+COPY config.yml domain.yml credentials.yml endpoints.yml ./
+COPY data/ data/
 
-# 复制项目文件
-COPY . .
+# 安装依赖
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir rasa==3.6.2 rasa-sdk==3.6.1 jieba==0.42.1 && \
+    rm -rf /root/.cache/pip
 
 # 创建模型目录并训练
 RUN mkdir -p models && \
-    rasa train --num-threads 1 --debug && \
+    rasa train --num-threads 1 && \
     rm -rf /tmp/* /var/tmp/*
 
 # 暴露端口
 EXPOSE 5005
 
 # 启动命令
-CMD rasa run --enable-api --cors "*" --port 5005 --host 0.0.0.0 
+CMD ["rasa", "run", "--enable-api", "--cors", "*", "--port", "5005", "--host", "0.0.0.0"] 
