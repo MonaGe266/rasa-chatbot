@@ -13,18 +13,16 @@ RUN groupadd -r rasa && useradd -r -g rasa -s /sbin/nologin -d /home/rasa rasa \
     && chown -R rasa:rasa /home/rasa
 
 # 安装构建依赖
-RUN mkdir -p /usr/share/man/man1 && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     python3-dev \
     gcc \
     curl \
-    xz-utils \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/share/doc/* \
-    && rm -rf /usr/share/man/* \
-    && apt-get clean
+    && rm -rf /usr/share/man/*
 
 # 设置工作目录
 WORKDIR /build
