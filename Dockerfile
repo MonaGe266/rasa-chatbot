@@ -30,17 +30,14 @@ RUN python -m venv /opt/venv && \
 # 切换到非 root 用户
 USER rasa
 
-# 安装基础依赖
+# 安装 Rasa 和基础依赖
 RUN . /opt/venv/bin/activate && \
     pip install --upgrade pip && \
     pip install --no-cache-dir \
-    numpy==1.23.5 \
-    protobuf==4.23.3 \
-    jieba==0.42.1
-
-# 安装 Rasa
-RUN . /opt/venv/bin/activate && \
-    pip install --no-cache-dir rasa==3.6.2 rasa-sdk==3.6.1
+    rasa==3.5.12 \
+    rasa-sdk==3.5.1 \
+    jieba==0.42.1 \
+    numpy==1.23.5
 
 # 第二阶段：最终镜像
 FROM python:3.9-slim-buster
