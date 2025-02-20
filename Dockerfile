@@ -5,12 +5,18 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     DEBIAN_FRONTEND=noninteractive
 
+# 创建非 root 用户
+RUN groupadd -r rasa && useradd -r -g rasa -s /sbin/nologin -d /home/rasa rasa \
+    && mkdir -p /home/rasa \
+    && chown -R rasa:rasa /home/rasa
+
 # 安装构建依赖
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     python3-dev \
     gcc \
+    curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -18,16 +24,27 @@ RUN apt-get update && \
 WORKDIR /build
 
 # 只复制必要的文件
-COPY requirements.txt .
+COPY --chown=rasa:rasa requirements.txt .
+
+# 创建并设置虚拟环境
+RUN python -m venv /opt/venv && \
+    chown -R rasa:rasa /opt/venv
+
+# 切换到非 root 用户
+USER rasa
 
 # 安装依赖到指定目录
-RUN python -m venv /opt/venv && \
-    . /opt/venv/bin/activate && \
+RUN . /opt/venv/bin/activate && \
     pip install --upgrade pip && \
     pip install --no-cache-dir rasa==3.6.2 rasa-sdk==3.6.1 jieba==0.42.1 protobuf==3.20.3 numpy==1.23.5
 
 # 第二阶段：最终镜像
 FROM python:3.9-slim-buster
+
+# 创建非 root 用户
+RUN groupadd -r rasa && useradd -r -g rasa -s /sbin/nologin -d /home/rasa rasa \
+    && mkdir -p /home/rasa \
+    && chown -R rasa:rasa /home/rasa
 
 # 设置环境变量
 ENV PORT=5005 \
@@ -41,14 +58,21 @@ ENV PORT=5005 \
 WORKDIR /app
 
 # 从构建阶段复制虚拟环境
-COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder --chown=rasa:rasa /opt/venv /opt/venv
 
 # 复制项目文件
-COPY config.yml domain.yml endpoints.yml ./
-COPY data/ data/
+COPY --chown=rasa:rasa config.yml domain.yml endpoints.yml ./
+COPY --chown=rasa:rasa data/ data/
 
-# 创建模型目录并训练
+# 创建模型目录
 RUN mkdir -p models && \
+    chown -R rasa:rasa /app
+
+# 切换到非 root 用户
+USER rasa
+
+# 训练模型
+RUN . /opt/venv/bin/activate && \
     rasa train --num-threads 1 --debug
 
 # 暴露端口
@@ -59,4 +83,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:$PORT/status || exit 1
 
 # 启动命令
-CMD rasa run --enable-api --cors "*" --port $PORT --host 0.0.0.0 --log-level info 
+CMD . /opt/venv/bin/activate && \
+    rasa run --enable-api --cors "*" --port $PORT --host 0.0.0.0 --log-level info 
