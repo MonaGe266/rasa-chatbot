@@ -41,7 +41,7 @@ RUN . /opt/venv/bin/activate && \
 
 # 安装 Rasa 和所有依赖
 RUN . /opt/venv/bin/activate && \
-    pip install --no-cache-dir rasa==3.5.14 'jieba<0.43.0'
+    pip install --no-cache-dir rasa==3.5.14 'jieba<0.43.0' transformers==4.28.1
 
 # 第二阶段：最终镜像
 FROM python:3.9-slim-buster
