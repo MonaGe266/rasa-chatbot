@@ -33,11 +33,11 @@ USER rasa
 # 安装 Rasa 和基础依赖
 RUN . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir \
-        'numpy>=1.23.5,<1.24.0' \
-        'jieba>=0.42.1,<0.43.0' \
-        'rasa==3.6.2' \
-        'rasa-sdk==3.6.1'
+    pip install --no-cache-dir rasa==3.5.14
+
+# 安装额外依赖
+RUN . /opt/venv/bin/activate && \
+    pip install --no-cache-dir jieba==0.42.1
 
 # 第二阶段：最终镜像
 FROM python:3.9-slim-buster
