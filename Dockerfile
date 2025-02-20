@@ -17,8 +17,10 @@ RUN apt-get update && \
     python3-dev \
     gcc \
     curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    xz-utils \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/share/doc/* \
+    && rm -rf /usr/share/man/*
 
 # 设置工作目录
 WORKDIR /build
