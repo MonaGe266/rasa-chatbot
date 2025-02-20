@@ -23,9 +23,6 @@ RUN apt-get update && \
 # 设置工作目录
 WORKDIR /build
 
-# 只复制必要的文件
-COPY --chown=rasa:rasa requirements.txt .
-
 # 创建并设置虚拟环境
 RUN python -m venv /opt/venv && \
     chown -R rasa:rasa /opt/venv
@@ -33,10 +30,17 @@ RUN python -m venv /opt/venv && \
 # 切换到非 root 用户
 USER rasa
 
-# 安装依赖到指定目录
+# 安装基础依赖
 RUN . /opt/venv/bin/activate && \
     pip install --upgrade pip && \
-    pip install --no-cache-dir rasa==3.6.2 rasa-sdk==3.6.1 jieba==0.42.1 protobuf==3.20.3 numpy==1.23.5
+    pip install --no-cache-dir \
+    numpy==1.23.5 \
+    protobuf==4.23.3 \
+    jieba==0.42.1
+
+# 安装 Rasa
+RUN . /opt/venv/bin/activate && \
+    pip install --no-cache-dir rasa==3.6.2 rasa-sdk==3.6.1
 
 # 第二阶段：最终镜像
 FROM python:3.9-slim-buster
