@@ -39,13 +39,9 @@ RUN . /opt/venv/bin/activate && \
     pip install --upgrade pip==23.0.1 && \
     pip install --upgrade setuptools==67.6.1 wheel==0.40.0
 
-# 安装 Rasa
+# 安装 Rasa 和所有依赖
 RUN . /opt/venv/bin/activate && \
-    pip install --no-cache-dir rasa==3.5.14
-
-# 安装中文支持
-RUN . /opt/venv/bin/activate && \
-    pip install --no-cache-dir 'jieba<0.43.0'
+    pip install --no-cache-dir rasa==3.5.14 'jieba<0.43.0'
 
 # 第二阶段：最终镜像
 FROM python:3.9-slim-buster
