@@ -32,12 +32,12 @@ USER rasa
 
 # 安装 Rasa 和基础依赖
 RUN . /opt/venv/bin/activate && \
-    pip install --upgrade pip && \
+    pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir \
-    rasa==3.5.12 \
-    rasa-sdk==3.5.1 \
-    jieba==0.42.1 \
-    numpy==1.23.5
+        'numpy>=1.23.5,<1.24.0' \
+        'jieba>=0.42.1,<0.43.0' \
+        'rasa==3.6.2' \
+        'rasa-sdk==3.6.1'
 
 # 第二阶段：最终镜像
 FROM python:3.9-slim-buster
@@ -74,7 +74,7 @@ USER rasa
 
 # 训练模型
 RUN . /opt/venv/bin/activate && \
-    rasa train --num-threads 1 --debug
+    rasa train --num-threads 1
 
 # 暴露端口
 EXPOSE $PORT
@@ -85,4 +85,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # 启动命令
 CMD . /opt/venv/bin/activate && \
-    rasa run --enable-api --cors "*" --port $PORT --host 0.0.0.0 --log-level info 
+    rasa run --enable-api --cors "*" --port $PORT --host 0.0.0.0 
