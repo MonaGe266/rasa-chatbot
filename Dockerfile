@@ -3,7 +3,9 @@ FROM python:3.9-slim-buster as builder
 # 设置环境变量
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    DEBIAN_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
 # 创建非 root 用户
 RUN groupadd -r rasa && useradd -r -g rasa -s /sbin/nologin -d /home/rasa rasa \
@@ -11,7 +13,8 @@ RUN groupadd -r rasa && useradd -r -g rasa -s /sbin/nologin -d /home/rasa rasa \
     && chown -R rasa:rasa /home/rasa
 
 # 安装构建依赖
-RUN apt-get update && \
+RUN mkdir -p /usr/share/man/man1 && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     python3-dev \
@@ -20,7 +23,8 @@ RUN apt-get update && \
     xz-utils \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/share/doc/* \
-    && rm -rf /usr/share/man/*
+    && rm -rf /usr/share/man/* \
+    && apt-get clean
 
 # 设置工作目录
 WORKDIR /build
@@ -56,7 +60,9 @@ ENV PORT=5005 \
     PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH" \
     RASA_MEMORY_LIMIT=512m \
-    RASA_MAX_TRAINING_PROCESSES=1
+    RASA_MAX_TRAINING_PROCESSES=1 \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
 WORKDIR /app
 
